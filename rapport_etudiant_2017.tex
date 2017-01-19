@@ -373,7 +373,7 @@ Nous avons donc un délai possible de l'ordre de 0.2+0.001+1+0.041 = 1.242~s ent
 L'image qui est  affichée sur le moniteur ne doit pas être plus vieille que 600~ms (différence de temps entre la capture de l'image et son affichage sur le moniteur).}
 
 {\color{blue} Expliquez en vous appuyant sur votre conception comment vous garantissez que cette exigence est toujours respectée. \\}
-{\color{black} thread traitement image, periode 600ms. Il a une petite priorité. 4*40ms + 250ms < 600 ms \\}
+{\color{black}Le thread traitement image a une période de 600ms. Il a une petite priorité donc dans le pire des cas le délai d'attente entre 2 exécutions est de :  4*40ms + 250ms < 600 ms \\}
 {\color{blue} Fournissez un chronogramme (ou un diagramme de séquence si vous préférez) avec l’ordonnancement de votre système qui montre en quoi cela répond bien à cette exigence. Expliquez.}
 
 
