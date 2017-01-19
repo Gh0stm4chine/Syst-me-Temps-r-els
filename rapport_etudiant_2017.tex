@@ -105,18 +105,8 @@ Compétences évaluées :
 % CONCEPTION
 \section{Conception}
 
-{\color{red} Mettez dans cette partie tous les éléments de votre conception en particulier vos diagrammes AADL (vue globale du système et détails des threads). Cette partie doit être auto-suffisante pour comprendre votre application.
-
-Pour faciliter la lecture des schémas, vous allez présenter votre conception en trois parties, l'une focalisée sur la communication entre le moniteur et le superviseur, la seconde consacrée au contrôle du robot et la troisième au traitement vidéo.
-
-{\bf La partie de gestion automatique d'une mission du robot sera à part pour ceux l'ayant traitée.}
-
-Si vous le souhaitez, au lieu de dessiner vos diagrammes sous un éditeur, vous pouvez joindre un scan de vos schémas — ils doivent être lisibles et propres.}
-
 % VUE GENERAL DU SYSTEME
 \subsection{Diagramme fonctionnel général}
-
-{\color{red} Mettez ici un diagramme fonctionnel qui présente les principaux blocs de votre conception. Pour cela, inspirez vous du diagramme ci-dessous (fig.~\ref{fig:diag_fonc_gen}) en indiquant pour chaque groupe de threads les données et ports partagés. La figure~\ref{fig:diag_fonc_gen} a été réalisée à partir du document de conception. {\bf Vous devez absolument conserver le découpage en trois groupes de threads ({\tt th\_group\_gestion\_moniteur}, {\tt th\_group\_gestion\_robot}, {\tt th\_group\_vision}).}}
 
 \begin{figure}[htbp]
 \label{fig:diag_fonc_gen}
@@ -129,15 +119,6 @@ Si vous le souhaitez, au lieu de dessiner vos diagrammes sous un éditeur, vous 
 
 % DIAGRAMME FONCTIONNEL GT MONITEUR
 \subsection{Groupe de threads gestion du moniteur}
-
-{\color{red}Placez ici :
-\begin{itemize}
-\item le diagramme fonctionnel en AADL décrivant le groupe de threads de gestion du moniteur (voir exemple de la figure~\ref{fig:diag_fonc_moniteur} réalisée à partir du dossier de conception),
-\item remplir le tableau~\ref{tab:gt_moniteur} pour expliquer le rôle de chacun des threads,
-\item les diagrammes d'activité de chaque thread de ce groupe.
-\end{itemize}
-
-Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent pertinents pour comprendre les diagrammes.}
 
 % DIAGRAMME FONCTIONNEL GT MONITEUR
 \subsubsection{Diagramme fonctionnel du groupe gestion du moniteur}
@@ -155,8 +136,6 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 
 % DESCRIPTION THREADS GT MONITEUR
 \subsubsection{Description des threads  du groupe gestion du moniteur}
-{\color{red} Remplissez le tableau ci-dessous pour expliquer le rôle de chaque thread et donner son niveau de priorité.}
-
 
 \begin{table}[htp]
 \caption{Description des threads du groupe {\tt th\_group\_gestion\_moniteur}}
@@ -170,8 +149,6 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 \hline
 \color{black}thEnvoyer	& \color{black}Envoi l'ensemble des messages du superviseur au moniteur & \color{black}55\\
 \hline
-\color{black}... &	\color{black}... &	\color{black}...\\
-\hline
 \end{tabular}
 \end{center}
 \label{tab:gt_moniteur}
@@ -179,16 +156,18 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 
 % DIAGRAMMES D'ACTIVITE GT MONITEUR
 \subsubsection{Diagrammes d'activité  du groupe gestion du moniteur}
-{\color{red}Décrivez le comportement de chacun de vos threads avec des diagrammes d'activité. Apportez les explications qui vous semblent nécessaires pour comprendre votre conception. A titre d'exemple les diagrammes fonctionnels tirés du document de conception sont remis.}
 
 \begin{figure}[htbp]
 \label{fig:act_communiquer}
 \begin{center}
-{\includegraphics[scale=.4]{./figures/communiquer}}
+{\includegraphics[scale=.35]{./figures/communiquer}}
 {\caption{Diagramme d'activité du thread {\tt th\_communiquer}}}
 \end{center}
 \end{figure}
 \FloatBarrier
+
+{\color{black} \bf thCommuniquer :}
+{\color{black} On attend que le robot soit connecté. Lorsque c'est fait si l'état de communication avec le robot n'est pas bon, on se remet en attente. Sinon on envoie l'ordre de rechargement du watchdog. \\ Comme il y a une communication avec le robot on doit recevoir une réponse de celui-ci. Si l'on ne reçoit rien un compteur global s'incrémente, lorsque ce compteur est à 3 on considère la connexion perdue. }
 
 \begin{figure}[htbp]
 \label{fig:act_envoyer}
@@ -204,7 +183,15 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 
 % DIAGRAMME FONCTIONNEL GT ROBOT
 \subsubsection{Diagramme fonctionnel du groupe gestion robot}
-{\color{blue} Ajoutez le diagramme fonctionnel du groupe de threads de gestion du robot.}
+
+\begin{figure}[htbp]
+\label{fig:act_envoyer}
+\begin{center}
+{\includegraphics[scale=.5]{./figures/groupRobot}}
+{\caption{Diagramme fonctionnel du groupe de threads gestion du robot}}
+\end{center}
+\end{figure}
+\FloatBarrier
 
 % DESCRIPTION THREADS GT ROBOT
 \subsubsection{Description des threads du groupe gestion robot}
@@ -239,11 +226,13 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 \begin{figure}[htbp]
 \label{fig:act_communiquer}
 \begin{center}
-{\includegraphics[scale=.4]{./figures/watchdog}}
+{\includegraphics[scale=.36]{./figures/watchdog}}
 {\caption{Diagramme d'activité du thread thReloadWatchdog}}
 \end{center}
 \end{figure}
-{\color{black}On attend que le robot soit connecté pour lui envoyer l'ordre de rechargement du watchdog.}
+\FloatBarrier
+{\color{black} \bf thReloadWatchdog :}
+{\color{black} On attend que le robot soit connecté. Lorsque c'est fait si l'état de communication avec le robot n'est pas bon, on se remet en attente. Sinon on envoie l'ordre de rechargement du watchdog. \\ Comme il y a une communication avec le robot on doit recevoir une réponse de celui-ci. Si l'on ne reçoit rien un compteur global s'incrémente, lorsque ce compteur est à 3 on considère la connexion perdue. }
 
 \begin{figure}[htbp]
 \label{fig:act_communiquer}
@@ -253,6 +242,8 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 \end{center}
 \end{figure}
 \FloatBarrier
+{\color{black} \bf thEtatBatterie :}
+{\color{black} Toutes les 250 ms on regarde l'etat de la batterie. Si l'etat des communication n'est pas bon on se remet en attente. Sinon on va aller récupérer l'information sur l'etat de la batterie du robot. De même que dans le thread précédent il y a une communication avec le robot. Si celui ci ne répond le compteur global s'incrémente. Sinon on envoie au moniteur l'état de la batterie. }
 
 \begin{figure}[htbp]
 \label{fig:act_communiquer}
@@ -263,6 +254,9 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 \end{figure}
 \FloatBarrier
 
+{\color{black} \bf thDeplacer :}
+{\color{black} Lorsque l'état de la communication avec le robot est ok, le superviseur récupère du moniteur l'ordre de mouvement. Il traduit ensuite ces ordres et les envoie au robot. De même que dans le thread précédent il y a une communication avec le robot. Si celui ci ne répond le compteur global s'incrémente. Lorsque ce compteur atteint 3 la connexion est considérée perdue. }
+
 
 % DIAGRAMME FONCTIONNEL GT VISION
 \subsection{Groupe de threads vision}
@@ -270,12 +264,17 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 % DIAGRAMME FONCTIONNEL GT VISION
 \subsubsection{Diagramme fonctionnel du groupe vision}
 
-{\color{blue} Ajoutez le diagramme fonctionnel du groupe de threads de vision.}
+\begin{figure}[htbp]
+\label{fig:act_envoyer}
+\begin{center}
+{\includegraphics[scale=.5]{./figures/groupVision}}
+{\caption{Diagramme fonctionnel du groupe de threads gestion de vision}}
+\end{center}
+\end{figure}
+\FloatBarrier
 
 % DESCRIPTION THREADS GT VISION
 \subsubsection{Description des threads du groupe vision}
-{\color{red} Remplissez le tableau ci-dessous pour expliquer le rôle de chaque thread et donner son niveau de priorité.}
-
 
 \begin{table}[htp]
 \caption{Description des threads du groupe {\tt th\_group\_vision}}
@@ -285,9 +284,9 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 \bf Nom du thread &	\bf Rôle &	\bf Priorité \\
 \hline
 \hline
-\color{black}thTraitementImage &	\color{black}Capture une image, si l'utilisateur souhaite la position du robot, il la dessine sur cette image, compresse l'image et l'envoi en message. Si il ne veux pas la position il compresse l'image puis l'envoi en message. Il ne peut pas s'exécuter si il y a une calibration. &	\color{blue}30\\
+\color{black}thTraitementImage &	\color{black}Capture une image, si l'utilisateur souhaite la position du robot, il la dessine sur cette image, compresse l'image et l'envoi en message. Si il ne veux pas la position il compresse l'image puis l'envoi en message. Il ne peut pas s'exécuter si il y a une calibration. &	\color{black}30\\
 \hline
-\color{black}thCalibration &	\color{black}Détection de l'arène, l'utilisateur doit valider la calibration ou redemander une détection &	\color{blue}35\\
+\color{black}thCalibration &	\color{black}Détection de l'arène, l'utilisateur doit valider la calibration ou redemander une détection &	\color{black}35\\
 \hline
 \end{tabular}
 \end{center}
@@ -297,7 +296,6 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 
 % DIAGRAMMES D'ACTIVITE GT VISION
 \subsubsection{Diagrammes d'activité du groupe vision}
-{\color{blue}Décrivez le comportement de chacun de vos threads avec des diagrammes d'activité. Apportez les explications qui vous semblent nécessaires pour comprendre votre conception.}
 
 \begin{figure}[htbp]
 \label{fig:act_calibration}
@@ -307,15 +305,20 @@ Décrivez tous les éléments (paramètres, variables, etc.) qui vous semblent p
 \end{center}
 \end{figure}
 \FloatBarrier
+{\color{black} \bf thCalibration :}
+{\color{black} On attend que la calibration de l'arène soit réalisée. Si la calibration n'a pas marché on se remet en attente d'une nouvelle calibration. Si l'arène est trouvée on sauvegarde cette calibration sinon  }
+
 
 \begin{figure}[htbp]
 \label{fig:act_calibration}
 \begin{center}
-{\includegraphics[scale=.4]{./figures/traitement_image}}
+{\includegraphics[scale=.35]{./figures/traitement_image}}
 {\caption{Diagramme d'activité du thread {\tt thTraitementImage}}}
 \end{center}
 \end{figure}
 \FloatBarrier
+{\color{black} \bf thTraitementImage :}
+{\color{black} Lorsque la camera est connectée on regarde l'état de la communication avec elle. On récupère les données de la calibration et les données de la webcam. On regarde ensuite si l'utilisateur demande à trouver la position du robot dans l'arène. Si oui on cherche la position du robot dans l'arène que l'on a sauvegardée puis  envoie la position du robot au moniteur et on l'affiche sur l'image.}
 
 \newpage
 
@@ -347,21 +350,23 @@ La pire des situations est une exécution du thread {\tt th\_deplacer} juste ava
 
 Nous avons donc un délai possible de l'ordre de 0.2+0.001+1+0.041 = 1.242~s entre la sélection d'un mouvement par l'utilisateur et sa réception par le robot.
 
-\begin{figure}[htbp]
-\begin{center}
-\includegraphics[scale=0.6]{./figures-pdf/sequence}
-\caption{\color{red}Exemple de pire séquence d'exécution pour la transmission d'un ordre de mouvement au robot.}
-\label{fig:seq}
-\end{center}
-\end{figure}
 }
 
 % EXIGENCE 1
 \subsection{Exigence 1 : En cas de perte de communication entre le robot et le superviseur, le robot est stoppé et le nouvel état est signalé à l'utilisateur via le moniteur.}
 
-{\color{black} Toutes les secondes, le superviseur envoie un ordre de rechargement du watchdog au robot pour éviter qu'il expire. Car si il expire, un compteur local au robot s'incrémente et lorsqu'il atteint 7, le robot s'arrête et doit être redémarré manuellement. 
+{\color{black} Toutes les secondes, le superviseur envoie un ordre de rechargement du watchdog au robot pour éviter qu'il expire. Car si il expire, un compteur local au robot s'incrémente et lorsqu'il atteint 7, le robot s'arrête et doit être redémarré manuellement.}
 
-{\color{blue} Fournissez un chronogramme (ou un diagramme de séquence si vous préférez) avec l’ordonnancement de votre système et estimer la plus grande durée entre l'instant où la communication est perdue et l'instant où l'utilisateur en est informé.}
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[scale=0.5]{./figures/chronogramme1}
+\caption{\color{black}Estimation de la plus grande durée entre l'instant où la communication est perdue et l'instant où l'utilisateur en est informé.}
+\label{fig:seq}
+\end{center}
+\end{figure}
+\FloatBarrier
+
+{\color{black} La plus grande durée entre l'instant où la communication est perdue et l'instant où l'utilisateur en est informé est d'à peu près 8 secondes. Le reloadWatchdog s'execute toutes les 1s et sa priorité est très forte. Donc si l'on perd la connexion à t=1.1s et que le watchdog s'était exécuté à t=1s on commencera à compter à partir de 2s se fera donc 7,9s}
 
 % EXIGENCE 2
 \subsection{Exigence 2 : La communication entre le robot et le superviseur est déclarée perdue si et seulement si trois échecs successifs de communication entre le robot et le superviseur surviennent.}
@@ -372,16 +377,20 @@ Nous avons donc un délai possible de l'ordre de 0.2+0.001+1+0.041 = 1.242~s ent
 \subsection{Exigence 3 : 
 L'image qui est  affichée sur le moniteur ne doit pas être plus vieille que 600~ms (différence de temps entre la capture de l'image et son affichage sur le moniteur).}
 
-{\color{blue} Expliquez en vous appuyant sur votre conception comment vous garantissez que cette exigence est toujours respectée. \\}
 {\color{black}Le thread traitement image a une période de 600ms. Il a une petite priorité donc dans le pire des cas le délai d'attente entre 2 exécutions est de :  4*40ms + 250ms < 600 ms \\}
-{\color{blue} Fournissez un chronogramme (ou un diagramme de séquence si vous préférez) avec l’ordonnancement de votre système qui montre en quoi cela répond bien à cette exigence. Expliquez.}
 
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[scale=0.6]{./figures/chronogramme}
+\caption{\color{black}Chronogramme de l'ordonnacement du système.}
+\label{fig:seq}
+\end{center}
+\end{figure}
+\FloatBarrier
 
 %%%%%%%%%%%%%%%%%%%
 % TRANSFORMATION AADL2XENO
 \section{Transformation AADL2XENO}
- 
- {\color{red} Cette section est consacrée aux moyens pour passer d'un modèle AADL au code. Pour chacun des éléments AADL, vous allez expliquer {\bf comment le traduire en C} et quels {\bf services de Xenomai} vous avez utilisés {\bf en expliquant ce qu'il fait}. N'hésitez pas à illustrer avec des extraits de code.}
  
 % THREAD
 \subsection{Thread}
@@ -397,7 +406,7 @@ Le service {\tt rt\_task\_create} est utilisé pour créer la tâche, c'est-à-d
 
 % PRIORITE THREAD
 \subsubsection{Niveau de priorités}
- {\color{black} Expliquer comment vous fixez sous Xenomai le niveau de priorité d'un thread AADL. On déclare d'abord en variable globale le niveau de priorité que l'on souhaite attribuer au thread, puis on donne ce niveau de priorité en argument lors de la création de ce thread avec le service {\tt rt\_task\_create}}. Exemple : {\tt rt\_task\_create}(\&tenvoyer, NULL, 0, PRIORITY\_TENVOYER, 0) où PRIORITY\_TENVOYER est un entier déclaré en variable globale. On affecte des entiers 10, 20, 30, 40, etc aux niveaux de priorité pour qu'en cas d'évolution de la spécification, l'impact soit moins lourd.}
+{\color{black} On déclare d'abord en variable globale le niveau de priorité que l'on souhaite attribuer au thread, puis on donne ce niveau de priorité en argument lors de la création de ce thread avec le service {\tt rt\_task\_create}}. 
 
 % PERIODICITE THREAD
 \subsubsection{Activation périodique}
@@ -405,26 +414,22 @@ Le service {\tt rt\_task\_create} est utilisé pour créer la tâche, c'est-à-d
 
 % THREAD EVENEMENTIEL
 \subsubsection{Activation événementielle}
- {\color{blue} Expliquer les moyens mis en {\oe}uvre dans l'implémentation sous Xenomai pour gérer les activations événementielles d'un thread AADL.}
-\\Les moyens mis en {\oe}uvre sont : les sémaphores.
+{\color{black} Les moyens mis en {\oe}uvre sont : les sémaphores.}
 
 % PORT D'EVENEMENT
 \subsection{Port d’événement}
 
 % INSTANCIATION PORT D'EVENEMENT
 \subsubsection{Instanciation}
- {\color{blue} Comment avez-vous instancié un port d'événement ?}
-\\On instancie les sémaphores à la valeur 0 dans le main.c grâce à la fonction rt\_sem\_create(\&semEvent..,0,..) et en déclarant en extern dans le global.h la sémaphore : extern RT\_SEM semEvent et dans le global.c RT\_SEM semEvent.
+{\color{black}On instancie les sémaphores à la valeur 0 dans le main.c grâce à la fonction rt\_sem\_create(\&semEvent..,0,..) et en déclarant en extern dans le global.h la sémaphore : extern RT\_SEM semEvent et dans le global.c RT\_SEM semEvent.}
 
 % ENVOI PORT D'EVENEMENT
 \subsubsection{Envoi d’un événement}
- {\color{blue} Quels services ont été employés pour envoyer un événement ?}
-\\Pour envoyer un événement on libère le sémaphore associé à un l'événement en incrémentant sa valeur de 1 grâce à la fonction rt\_sem\_v(\&semEvent, INFINITE). 
+{\color{black} Pour envoyer un événement on libère le sémaphore associé à un l'événement en incrémentant sa valeur de 1 grâce à la fonction rt\_sem\_v(\&semEvent, INFINITE). }
 
 % RECEPTION PORT D'EVENEMENT
 \subsubsection{Réception d’un événement}
- {\color{blue} Comment se fait la synchronisation sur événement ?}
-\\La synchronisation sur un événement se fait avec l'acquisition de la sémaphore de l'événement qui décrémente sa valeur de 1 grâce à la fonction rt\_sem\_p(\&semEvent).
+{\color{black}La synchronisation sur un événement se fait avec l'acquisition de la sémaphore de l'événement qui décrémente sa valeur de 1 grâce à la fonction rt\_sem\_p(\&semEvent).}
 
 % DONNEE PARTAGEE
 \subsection{Donnée partagée}
@@ -442,13 +447,11 @@ Le service {\tt rt\_task\_create} est utilisé pour créer la tâche, c'est-à-d
 
 % INSTANCIATION PORT D'EVENEMENT-DONNEES
 \subsubsection{Instanciation}
- {\color{blue} Donnez la solution retenue pour implémenter un port d'événement-données avec Xenomai.}
-\\L'instanciation des ports d'événement-données avec Xenomai est faite grâce à l'instantciation de la structure serveur (Pas sur.. ? ) 
+ {\color{black} L'instanciation des ports d'événement-données avec Xenomai est faite grâce à l'instantciation de la structure serveur (Pas sur.. ? ) }
 
 % ENVOI PORT D'EVENEMENT-DONNEES
 \subsubsection{Envoi d’une donnée}
- {\color{blue} Quels services avez-vous employés pour envoyer des données ?}
-\\Pour envoyer des données on appelle la fonction appartenant à la structure serveur qui a déjà été implémentée : {server->send(serveur,msg)}
+ {\color{black} Pour envoyer des données on appelle la fonction appartenant à la structure serveur qui a déjà été implémentée : {server->send(serveur,msg)}
 
 % RECEPTION PORT D'EVENEMENT-DONNEES
 \subsubsection{Réception d’une donnée}
@@ -459,17 +462,10 @@ Le service {\tt rt\_task\_create} est utilisé pour créer la tâche, c'est-à-d
 % EXEMPLE DE TRANSFORMATION
 \section{Application de la transformation AADL2Xenomai}
 
-{\color{blue} Vous trouverez à la fin de ce document (voir annexe~\ref{ann:conception}) une application très simple modélisée en AADL. Mettez ici le code de cette application en suivant scrupuleusement vos règles.
-
-Ne mettez pas vos fichiers d'en-tête (sauf des extraits importants si nécessaire) et structurer le plus simplement le code. L'important est de montrer la cohérence entre les règles énoncées ci-dessus et le code que vous produisez sur l'exemple.}
-
-
 
 %%%%%%%%%%%%%%
 % EXEMPLE A TRADUIRE
-\newpage
-\appendix
-\section{Cas d'étude à traduire}
+
 \label{ann:conception}
 \begin{itemize}
 \item \large{\bf fonctions.c}
