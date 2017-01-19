@@ -14,9 +14,10 @@
 
 \usepackage{listings}
 \usepackage{color}
+\usepackage{courier}
 \lstset{ %
   backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
-  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  basicstyle=\footnotesize\ttfamily,        % the size of the fonts that are used for the code
   breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
   breaklines=true,                 % sets automatic line breaking
   captionpos=b,                    % sets the caption-position to bottom
@@ -122,13 +123,10 @@ Compétences évaluées :
 
 % DIAGRAMME FONCTIONNEL GT MONITEUR
 \subsubsection{Diagramme fonctionnel du groupe gestion du moniteur}
-
-{\color{red} Exemple de diagramme fonctionnel pour le groupe de thread de gestion du moniteur. Mettez à jour ce diagramme avec votre conception.}
-
-\begin{figure}[htbp]
+\begin{figure}[!h]
 \label{fig:diag_fonc_moniteur}
 \begin{center}
-{\includegraphics[scale=.5]{./figures-pdf/diag_fonc_moniteur}}
+{\includegraphics[scale=.5]{./figures/groupMoniteur.png}}
 {\caption{Diagramme fonctionnel du groupe de threads gestion du moniteur}}
 \end{center}
 \end{figure}
@@ -194,6 +192,7 @@ Compétences évaluées :
 \FloatBarrier
 
 % DESCRIPTION THREADS GT ROBOT
+\newpage
 \subsubsection{Description des threads du groupe gestion robot}
 
 
@@ -223,7 +222,7 @@ Compétences évaluées :
 % DIAGRAMMES D'ACTIVITE GT ROBOT
 \subsubsection{Diagrammes d'activité du groupe robot}
 
-\begin{figure}[htbp]
+\begin{figure}[!h]
 \label{fig:act_communiquer}
 \begin{center}
 {\includegraphics[scale=.36]{./figures/watchdog}}
@@ -245,7 +244,7 @@ Compétences évaluées :
 {\color{black} \bf thEtatBatterie :}
 {\color{black} Toutes les 250 ms on regarde l'etat de la batterie. Si l'etat des communication n'est pas bon on se remet en attente. Sinon on va aller récupérer l'information sur l'etat de la batterie du robot. De même que dans le thread précédent il y a une communication avec le robot. Si celui ci ne répond le compteur global s'incrémente. Sinon on envoie au moniteur l'état de la batterie. }
 
-\begin{figure}[htbp]
+\begin{figure}[!h]
 \label{fig:act_communiquer}
 \begin{center}
 {\includegraphics[scale=.4]{./figures/deplacer}}
@@ -274,6 +273,7 @@ Compétences évaluées :
 \FloatBarrier
 
 % DESCRIPTION THREADS GT VISION
+\newpage
 \subsubsection{Description des threads du groupe vision}
 
 \begin{table}[htp]
@@ -286,7 +286,7 @@ Compétences évaluées :
 \hline
 \color{black}thTraitementImage &	\color{black}Capture une image, si l'utilisateur souhaite la position du robot, il la dessine sur cette image, compresse l'image et l'envoi en message. Si il ne veux pas la position il compresse l'image puis l'envoi en message. Il ne peut pas s'exécuter si il y a une calibration. &	\color{black}30\\
 \hline
-\color{black}thCalibration &	\color{black}Détection de l'arène, l'utilisateur doit valider la calibration ou redemander une détection &	\color{black}35\\
+\color{black}thCalibration &	\color{black}Détecte l'arène depuis la webcam. L'image de l'arène apparait sur le moniteur. Si cette calibration ne convient pas à l'utilisateur, il peut redemander une détection. Si elle lui convient, il la valide sur le moniteur. &	\color{black}35\\
 \hline
 \end{tabular}
 \end{center}
@@ -297,7 +297,7 @@ Compétences évaluées :
 % DIAGRAMMES D'ACTIVITE GT VISION
 \subsubsection{Diagrammes d'activité du groupe vision}
 
-\begin{figure}[htbp]
+\begin{figure}[!h]
 \label{fig:act_calibration}
 \begin{center}
 {\includegraphics[scale=.4]{./figures/calibration}}
@@ -306,10 +306,10 @@ Compétences évaluées :
 \end{figure}
 \FloatBarrier
 {\color{black} \bf thCalibration :}
-{\color{black} On attend que la calibration de l'arène soit réalisée. Si la calibration n'a pas marché on se remet en attente d'une nouvelle calibration. Si l'arène est trouvée on sauvegarde cette calibration sinon  }
+{\color{black} On attend que la calibration de l'arène soit réalisée. Si la calibration n'a pas marché on se remet en attente d'une nouvelle calibration. Si l'arène est trouvée on sauvegarde cette calibration sinon si la calibration a fonctionné mais que l'arène n'est pas encore détectée, on cherche l'arène et on envoi au moniteur la calibration. }
 
 
-\begin{figure}[htbp]
+\begin{figure}[!h]
 \label{fig:act_calibration}
 \begin{center}
 {\includegraphics[scale=.35]{./figures/traitement_image}}
