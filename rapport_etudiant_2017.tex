@@ -377,7 +377,7 @@ Nous avons donc un délai possible de l'ordre de 0.2+0.001+1+0.041 = 1.242~s ent
 \subsection{Exigence 3 : 
 L'image qui est  affichée sur le moniteur ne doit pas être plus vieille que 600~ms (différence de temps entre la capture de l'image et son affichage sur le moniteur).}
 
-{\color{black}Le thread traitement image a une période de 600ms. Il a une petite priorité donc dans le pire des cas le délai d'attente entre 2 exécutions est de :  4*40ms + 250ms < 600 ms \\}
+{\color{black}Le thread traitement image a une période de 600ms. L'exécution du thread traitement image prend au maximum 250ms. De plus, la faible priorité du thread traitementImage, d'autres threads peuvent prendre la main et s'exécuter, augmentant le delai d'execution maximal de traitementImage. En revanche, comme chacun des threads à la priorité supérieure à traitementImage ont une période supérieure à 600ms, donc ne pourront pas s'exécuter plus d'une fois entre chaque exécution du thread traitementImage. Donc dans le pire des cas le délai d'attente entre 2 exécutions est de :  4*40ms + 250ms < 600 ms \\}
 
 \begin{figure}[htbp]
 \begin{center}
@@ -414,7 +414,7 @@ Le service {\tt rt\_task\_create} est utilisé pour créer la tâche, c'est-à-d
 
 % THREAD EVENEMENTIEL
 \subsubsection{Activation événementielle}
-{\color{black} Les moyens mis en {\oe}uvre sont : les sémaphores.}
+{\color{black} Pour gérer les activations événementielles d'un thread AADL, nous avons utilisé des sémaphores pour permettre la synchronisation des différents threads.}
 
 % PORT D'EVENEMENT
 \subsection{Port d’événement}
@@ -425,11 +425,11 @@ Le service {\tt rt\_task\_create} est utilisé pour créer la tâche, c'est-à-d
 
 % ENVOI PORT D'EVENEMENT
 \subsubsection{Envoi d’un événement}
-{\color{black} Pour envoyer un événement on libère le sémaphore associé à un l'événement en incrémentant sa valeur de 1 grâce à la fonction rt\_sem\_v(\&semEvent, INFINITE). }
+{\color{black} Pour envoyer un événement on libère le sémaphore associé à un l'événement en incrémentant sa valeur de 1 grâce à la fonction rt\_sem\_v(\&semEvent, INFINITE). En terme de synchronisation cela est équivalent à event! }
 
 % RECEPTION PORT D'EVENEMENT
 \subsubsection{Réception d’un événement}
-{\color{black}La synchronisation sur un événement se fait avec l'acquisition de la sémaphore de l'événement qui décrémente sa valeur de 1 grâce à la fonction rt\_sem\_p(\&semEvent).}
+{\color{black}La synchronisation sur un événement se fait avec l'acquisition de la sémaphore de l'événement qui décrémente sa valeur de 1 grâce à la fonction rt\_sem\_p(\&semEvent). En terme de synchronisation cela est équivalent à event?}
 
 % DONNEE PARTAGEE
 \subsection{Donnée partagée}
@@ -447,16 +447,16 @@ Le service {\tt rt\_task\_create} est utilisé pour créer la tâche, c'est-à-d
 
 % INSTANCIATION PORT D'EVENEMENT-DONNEES
 \subsubsection{Instanciation}
- {\color{black} L'instanciation des ports d'événement-données avec Xenomai est faite grâce à l'instantciation de la structure serveur (Pas sur.. ? ) }
+ {\color{black} L'instanciation des ports d'événement-données avec Xenomai est faite grâce à l'instantciation de la structure serveur, qui permet l'envoi et la réception de données à travers une file de messages.}
 
 % ENVOI PORT D'EVENEMENT-DONNEES
 \subsubsection{Envoi d’une donnée}
- {\color{black} Pour envoyer des données on appelle la fonction appartenant à la structure serveur qui a déjà été implémentée : {server->send(serveur,msg)}
+{\color{black} Pour envoyer des données on appelle la fonction appartenant à la structure serveur qui a déjà été implémentée : server->send(serveur,msg). Le message étant obtenu à partir de la file grâce à la fonction rt\_queue\_read.}
 
 % RECEPTION PORT D'EVENEMENT-DONNEES
 \subsubsection{Réception d’une donnée}
  {\color{blue} Quels services avez-vous employé pour recevoir des données ?}
-\\Pareil grâce à la fonction receive de la structure server : server->receive(server,msg)
+\\Pareil grâce à la fonction receive de la structure server : server->receive(server,msg). Le message étant écrit dans la file grâce à la fonction rt\_queue\_send.
 
 %%%%%%%%%%%%%%%%%%%%
 % EXEMPLE DE TRANSFORMATION
@@ -482,13 +482,13 @@ void th_controler (void *arg)
   rt_printf ("th_controler :  initialisation du systeme\n");
   initialiser_le_systeme();
 
-  t_printf("th_controler : Demarrage des threads\n");   //On donne suffisament de ressources pour que les 2 autres threads puissent demarrer
-
+  t_printf("th_controler : Demarrage des threads\n");   
+  
+  /* On donne deux ressources pour liberer les deux threads en attente */
   rt_sem_v(&semDemarrage, TM_INFINITE);
-  rt_sem_v(&semDemarrage, TM_INFINITE);
-
-  rt_printf("th_controler : Debut de l'execution de periodique a 80s\n");
-  rt_task_set_periodic(NULL, TM_NOW, 80000000000);
+  rt_sem_v(&semDemarrage, TM_INFINITE);     
+  rt_printf("th_controler : Debut de l'execution de periodique a 80ms\n");
+  rt_task_set_periodic(NULL, TM_NOW, 80000000);
 
 
   while (1)
@@ -525,7 +525,6 @@ void th_capture (void *arg)
 
   rt_printf ("th_capture :  en attente de demarrage\n");
   rt_sem_p(&semDemarrage, TM_INFINITE);
-
   rt_printf("th_capture : Demarrage Succes\n");
 
 
